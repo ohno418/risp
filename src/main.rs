@@ -33,6 +33,11 @@ fn main() {
                     print!("\nexit");
                     process::exit(0);
                 }
+
+                // Empty input
+                if nread == 1 {
+                    continue;
+                }
             }
             Err(err) => panic!("{}", err),
         }
