@@ -26,7 +26,6 @@ fn main() {
 
         let mut input: String = String::new();
         io::stdin().read_line(&mut input).unwrap();
-        // println!("(debug) input: {}", input);
 
         print!("{}", mal::repl(&input));
     }
