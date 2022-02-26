@@ -26,12 +26,15 @@ fn main() {
         io::stdout().flush().unwrap();
 
         let mut input = String::new();
-        let nread = io::stdin().read_line(&mut input).unwrap();
-
-        // Exit with Ctrl-D.
-        if nread == 0 {
-            print!("\nexit");
-            process::exit(0);
+        match io::stdin().read_line(&mut input) {
+            Ok(nread) => {
+                // Exit with Ctrl-D.
+                if nread == 0 {
+                    print!("\nexit");
+                    process::exit(0);
+                }
+            }
+            Err(err) => panic!("{}", err),
         }
 
         print!("{}", risp::repl(&input));
