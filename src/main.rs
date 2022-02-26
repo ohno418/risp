@@ -25,16 +25,13 @@ fn main() {
         print!("user> ");
         io::stdout().flush().unwrap();
 
-        let mut input: String = String::new();
-        match io::stdin().read_line(&mut input) {
-            Ok(n) => {
-                // Exit with Ctrl-D.
-                if n == 0 {
-                    print!("\nexit");
-                    process::exit(0);
-                }
-            }
-            Err(err) => eprintln!("{}", err),
+        let mut input = String::new();
+        let nread = io::stdin().read_line(&mut input).unwrap();
+
+        // Exit with Ctrl-D.
+        if nread == 0 {
+            print!("\nexit");
+            process::exit(0);
         }
 
         print!("{}", mal::repl(&input));
