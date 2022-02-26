@@ -1,5 +1,6 @@
 use std::io::prelude::*;
 use std::io;
+use std::process;
 
 mod mal {
     pub fn repl(input: &str) -> &str {
@@ -25,7 +26,16 @@ fn main() {
         io::stdout().flush().unwrap();
 
         let mut input: String = String::new();
-        io::stdin().read_line(&mut input).unwrap();
+        match io::stdin().read_line(&mut input) {
+            Ok(n) => {
+                // Exit with Ctrl-D.
+                if n == 0 {
+                    print!("\nexit");
+                    process::exit(0);
+                }
+            }
+            Err(err) => eprintln!("{}", err),
+        }
 
         print!("{}", mal::repl(&input));
     }
