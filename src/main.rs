@@ -2,7 +2,7 @@ use std::io::prelude::*;
 use std::io;
 use std::process;
 
-mod mal {
+mod risp {
     pub fn repl(input: &str) -> &str {
         print(eval(read(input)))
     }
@@ -34,7 +34,7 @@ fn main() {
             process::exit(0);
         }
 
-        print!("{}", mal::repl(&input));
+        print!("{}", risp::repl(&input));
     }
 }
 
@@ -43,6 +43,6 @@ mod test {
     #[test]
     fn repl_returns_as_is() {
         let input = "asis";
-        assert_eq!(crate::mal::repl(input), "asis");
+        assert_eq!(crate::risp::repl(input), "asis");
     }
 }
