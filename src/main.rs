@@ -38,7 +38,7 @@ fn main() {
                 if nread == 1 {
                     continue;
                 }
-            }
+            },
             Err(err) => panic!("{}", err),
         }
 
