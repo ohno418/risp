@@ -1,27 +1,13 @@
-use std::io::prelude::*;
-use std::io;
-use std::process;
-
 mod risp {
-    pub fn repl(input: &str) -> &str {
-        print(eval(read(input)))
+    use std::io::prelude::*;
+    use std::io;
+    use std::process;
+
+    pub fn repl() {
+        print(eval(read()));
     }
 
-    fn read(input: &str) -> &str {
-        input
-    }
-
-    fn eval(input: &str) -> &str {
-        input
-    }
-
-    fn print(result: &str) -> &str {
-        result
-    }
-}
-
-fn main() {
-    loop {
+    fn read() -> &'static str {
         print!("user> ");
         io::stdout().flush().unwrap();
 
@@ -35,14 +21,28 @@ fn main() {
                 }
 
                 // Empty input
-                if nread == 1 {
-                    continue;
-                }
+                // if nread == 1 {
+                //     continue;
+                // }
             },
             Err(err) => panic!("{}", err),
         }
 
-        print!("{}", risp::repl(&input));
+        &input
+    }
+
+    fn eval(input: &str) -> &str {
+        input
+    }
+
+    fn print(result: &str) {
+        print!("{}", result);
+    }
+}
+
+fn main() {
+    loop {
+        risp::repl();
     }
 }
 
