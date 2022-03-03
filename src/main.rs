@@ -4,10 +4,10 @@ mod risp {
     use std::process;
 
     pub fn repl() {
-        print(eval(read()));
+        print(eval(&read()));
     }
 
-    fn read() -> &'static str {
+    fn read() -> String {
         print!("user> ");
         io::stdout().flush().unwrap();
 
@@ -28,7 +28,7 @@ mod risp {
             Err(err) => panic!("{}", err),
         }
 
-        &input
+        input
     }
 
     fn eval(input: &str) -> &str {
