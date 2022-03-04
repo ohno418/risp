@@ -41,16 +41,20 @@ mod risp {
 }
 
 fn main() {
+    use crate::risp::repl;
+
     loop {
-        risp::repl();
+        repl();
     }
 }
 
 #[cfg(test)]
 mod test {
+    use crate::risp::repl;
+
     #[test]
     fn repl_returns_as_is() {
         let input = "asis";
-        assert_eq!(crate::risp::repl(input), "asis");
+        assert_eq!(repl(input), "asis");
     }
 }
