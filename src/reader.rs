@@ -1,6 +1,8 @@
 use std::io::prelude::*;
 use std::io;
 
+// TODO
+// Read a user input from stdin, return its AST.
 pub fn read_str() -> String {
     print!("user> ");
     io::stdout().flush().unwrap();
