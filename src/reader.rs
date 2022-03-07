@@ -57,11 +57,15 @@ fn parse(tokens: &Vec<String>) -> Val {
 
     match tokens.first() {
         Some(tok) => {
-            if int_re.is_match(&tok) {
-                return Val::Int(tokens[0].parse().unwrap());
+            if tok == "(" {
+                // TODO
             }
 
-            Val::Sym(tok.to_string())
+            if int_re.is_match(&tok) {
+                return Val::Int(tokens[0].parse().unwrap());
+            } else {
+                return Val::Sym(tok.to_string());
+            }
         }
         None => panic!("No token to parse."),
     }
@@ -147,6 +151,21 @@ mod tests {
             }
 
             Err("expected Val::Sym".to_string())
+        }
+
+        #[test]
+        fn parse_list() -> Result<(), String> {
+            let tokens = vec![String::from("(* 12 23)")];
+            if let Val::List(first, rest) = parse(&tokens) {
+                if let (Val::Sym(s), Val::List(num0, num1)) = (first.deref(), rest.deref()) {
+                    // TODO
+                    if let (Val::Int(12), Val::Int(23)) = (num0, num1) {
+                        return Ok(());
+                    }
+                }
+            }
+
+            Err("parse wrong".to_string())
         }
     }
 }
