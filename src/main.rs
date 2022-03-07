@@ -22,7 +22,7 @@ mod risp {
                     eprintln!("unknown input: {}", input);
                     process::exit(1);
                 }
-                _ => print(eval(&input))
+                _ => print(eval(&input)),
             }
         }
     }
