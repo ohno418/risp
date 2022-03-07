@@ -62,14 +62,28 @@ mod tests {
         use crate::reader::tokenize;
 
         #[test]
-        fn tokenize_input_0() {
+        fn tokenize_number() {
+            let actual = tokenize("123");
+            let expected = vec!["123"];
+            assert_eq!(actual, expected);
+        }
+
+        #[test]
+        fn tokenize_number_list() {
+            let actual = tokenize("(12 23 34)");
+            let expected = vec!["(", "12", "23", "34", ")"];
+            assert_eq!(actual, expected);
+        }
+
+        #[test]
+        fn tokenize_addition_list() {
             let actual = tokenize("(+ 2 3)");
             let expected = vec!["(", "+", "2", "3", ")"];
             assert_eq!(actual, expected);
         }
 
         #[test]
-        fn tokenize_input_1() {
+        fn tokenize_nested_list() {
             let actual = tokenize("(* 2 (+ 31 4))");
             let expected = vec!["(", "*", "2", "(", "+", "31", "4", ")", ")"];
             assert_eq!(actual, expected);
