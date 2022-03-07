@@ -69,9 +69,23 @@ mod tests {
         }
 
         #[test]
+        fn tokenize_symbol() {
+            let actual = tokenize("abc");
+            let expected = vec!["abc"];
+            assert_eq!(actual, expected);
+        }
+
+        #[test]
         fn tokenize_number_list() {
             let actual = tokenize("(12 23 34)");
             let expected = vec!["(", "12", "23", "34", ")"];
+            assert_eq!(actual, expected);
+        }
+
+        #[test]
+        fn tokenize_symbol_started_list() {
+            let actual = tokenize("(mul 2 3)");
+            let expected = vec!["(", "mul", "2", "3", ")"];
             assert_eq!(actual, expected);
         }
 
