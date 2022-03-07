@@ -57,20 +57,22 @@ fn tokenize(input: &str) -> Vec<String> {
 // }
 
 #[cfg(test)]
-mod test_tokenize {
-    use super::tokenize;
+mod tests {
+    mod tokenize {
+        use crate::reader::tokenize;
 
-    #[test]
-    fn tokenize_input_0() {
-        let actual = tokenize("(+ 2 3)");
-        let expected = vec!["(", "+", "2", "3", ")"];
-        assert_eq!(actual, expected);
-    }
+        #[test]
+        fn tokenize_input_0() {
+            let actual = tokenize("(+ 2 3)");
+            let expected = vec!["(", "+", "2", "3", ")"];
+            assert_eq!(actual, expected);
+        }
 
-    #[test]
-    fn tokenize_input_1() {
-        let actual = tokenize("(* 2 (+ 31 4))");
-        let expected = vec!["(", "*", "2", "(", "+", "31", "4", ")", ")"];
-        assert_eq!(actual, expected);
+        #[test]
+        fn tokenize_input_1() {
+            let actual = tokenize("(* 2 (+ 31 4))");
+            let expected = vec!["(", "*", "2", "(", "+", "31", "4", ")", ")"];
+            assert_eq!(actual, expected);
+        }
     }
 }
