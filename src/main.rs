@@ -1,28 +1,13 @@
 mod reader;
 
 mod risp {
-    use crate::reader::read_str;
-    use std::process;
+    use crate::reader::read;
 
     pub fn repl() {
         loop {
-            let input = read_str();
-            match input.len() {
-                0 => {
-                    // Exit with Ctrl-D.
-                    print!("\nexit");
-                    process::exit(0);
-                }
-                1 => {
-                    // Empty input (only newline character)
-                    if input.as_bytes()[0] == b'\n' {
-                        continue;
-                    }
-
-                    eprintln!("unknown input: {}", input);
-                    process::exit(1);
-                }
-                _ => print(eval(&input)),
+            match read() {
+                Some(input) => print(eval(&input)),
+                None => continue,
             }
         }
     }

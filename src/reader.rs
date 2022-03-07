@@ -1,22 +1,43 @@
 use regex::Regex;
 use std::io;
 use std::io::prelude::*;
+use std::process;
 
 // TODO
 // Read a user input from stdin, return its AST.
-pub fn read_str() -> String {
+pub fn read() -> Option<String> {
+    if let Some(input) = read_user_input() {
+        let tokens = tokenize(&input);
+        // TODO
+        // parse_tokens
+        return Some(input);
+    }
+
+    None
+}
+
+fn read_user_input() -> Option<String> {
     print!("user> ");
     io::stdout().flush().unwrap();
 
     let mut input = String::new();
-    if let Err(err) = io::stdin().read_line(&mut input) {
-        panic!("{}", err);
+    match io::stdin().read_line(&mut input) {
+        Ok(nread) => {
+            match nread {
+                0 => {
+                    // Exit with Ctrl-D.
+                    print!("\nexit");
+                    process::exit(0);
+                }
+                1 => {
+                    // Empty input (only newline character)
+                    return None;
+                }
+                _ => Some(input),
+            }
+        }
+        Err(err) => panic!("{}", err),
     }
-
-    // TODO
-    let tokens = tokenize(&input);
-
-    input
 }
 
 fn tokenize(input: &str) -> Vec<String> {
