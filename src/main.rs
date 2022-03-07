@@ -1,23 +1,26 @@
 mod reader;
+mod types;
 
 mod risp {
     use crate::reader::read;
+    use crate::types::Val;
 
     pub fn repl() {
         loop {
             match read() {
-                Some(input) => print(eval(&input)),
+                Some(val) => print(eval(&val)),
                 None => continue,
             }
         }
     }
 
-    fn eval(input: &str) -> &str {
-        input
+    fn eval(val: &Val) -> &Val {
+        val
     }
 
-    fn print(result: &str) {
-        print!("{}", result);
+    fn print(result: &Val) {
+        // TODO
+        // print!("{}", result);
     }
 }
 

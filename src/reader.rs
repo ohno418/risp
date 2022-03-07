@@ -1,16 +1,16 @@
+use crate::types::Val;
 use regex::Regex;
 use std::io;
 use std::io::prelude::*;
 use std::process;
 
-// TODO
+// TODO: Result<Val, InputError>
 // Read a user input from stdin, return its AST.
-pub fn read() -> Option<String> {
+pub fn read() -> Option<Val> {
     if let Some(input) = read_user_input() {
         let tokens = tokenize(&input);
-        // TODO
-        // parse_tokens
-        return Some(input);
+        let val = parse(&tokens);
+        return Some(val);
     }
 
     None
@@ -52,9 +52,20 @@ fn tokenize(input: &str) -> Vec<String> {
     return tokens;
 }
 
-// TODO
-// fn read_form() {
-// }
+fn parse(tokens: &Vec<String>) -> Val {
+    let int_re = Regex::new(r"[0-9]+").unwrap();
+
+    match tokens.first() {
+        Some(tok) => {
+            if int_re.is_match(&tok) {
+                return Val::Int(tokens[0].parse().unwrap());
+            }
+
+            Val::Sym(tok.to_string())
+        }
+        None => panic!("No token to parse."),
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -101,6 +112,41 @@ mod tests {
             let actual = tokenize("(* 2 (+ 31 4))");
             let expected = vec!["(", "*", "2", "(", "+", "31", "4", ")", ")"];
             assert_eq!(actual, expected);
+        }
+    }
+
+    mod parse {
+        use crate::reader::parse;
+        use crate::types::*;
+
+        #[test]
+        fn parse_number() -> Result<(), String> {
+            let tokens = vec![String::from("42")];
+            let expected = 42;
+            if let Val::Int(n) = parse(&tokens) {
+                if n == expected {
+                    return Ok(());
+                } else {
+                    return Err(format!("expected {}, but got {}", expected, n));
+                }
+            }
+
+            Err("expected Val::Int".to_string())
+        }
+
+        #[test]
+        fn parse_symbol() -> Result<(), String> {
+            let tokens = vec![String::from("abc")];
+            let expected = "abc";
+            if let Val::Sym(s) = parse(&tokens) {
+                if s == expected {
+                    return Ok(());
+                } else {
+                    return Err(format!("expected {}, but got {}", expected, s));
+                }
+            }
+
+            Err("expected Val::Sym".to_string())
         }
     }
 }
