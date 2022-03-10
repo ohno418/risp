@@ -2,40 +2,34 @@ use crate::types::Val;
 use regex::Regex;
 use std::io;
 use std::io::prelude::*;
-use std::process;
 
-// TODO: Result<Val, InputError>
-// Read a user input from stdin, return its AST.
-pub fn read() -> Option<Val> {
-    if let Some(input) = read_user_input() {
-        let tokens = tokenize(&input);
-        let val = parse(&tokens);
-        return Some(val);
-    }
-
-    None
+pub enum Error {
+    CtrlD,
+    EmptyInput,
 }
 
-fn read_user_input() -> Option<String> {
+// Read a user input from stdin, return its AST.
+pub fn read() -> Result<Val, Error> {
+    match read_user_input() {
+        Ok(input) => {
+            let tokens = tokenize(&input);
+            return Ok(parse(&tokens));
+        }
+        Err(err) => Err(err),
+    }
+}
+
+fn read_user_input() -> Result<String, Error> {
     print!("user> ");
     io::stdout().flush().unwrap();
 
     let mut input = String::new();
     match io::stdin().read_line(&mut input) {
-        Ok(nread) => {
-            match nread {
-                0 => {
-                    // Exit with Ctrl-D.
-                    print!("\nexit");
-                    process::exit(0);
-                }
-                1 => {
-                    // Empty input (only newline character)
-                    return None;
-                }
-                _ => Some(input),
-            }
-        }
+        Ok(nread) => match nread {
+            0 => Err(Error::CtrlD),
+            1 => Err(Error::EmptyInput), // only newline
+            _ => Ok(input),
+        },
         Err(err) => panic!("{}", err),
     }
 }

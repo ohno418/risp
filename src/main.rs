@@ -2,14 +2,20 @@ mod reader;
 mod types;
 
 mod risp {
-    use crate::reader::read;
+    use crate::reader::{self, read};
     use crate::types::Val;
+    use std::process;
 
     pub fn repl() {
         loop {
             match read() {
-                Some(val) => print(eval(&val)),
-                None => continue,
+                Ok(val) => print(eval(&val)),
+                Err(reader::Error::CtrlD) => {
+                    // Exit with Ctrl-D.
+                    print!("\nexit");
+                    process::exit(0);
+                }
+                Err(reader::Error::EmptyInput) => continue,
             }
         }
     }
@@ -18,7 +24,7 @@ mod risp {
         val
     }
 
-    fn print(result: &Val) {
+    fn print(_result: &Val) {
         // TODO
         // print!("{}", result);
     }
