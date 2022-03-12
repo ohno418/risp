@@ -1,15 +1,10 @@
-use crate::types::Val;
+use crate::types::{ReadError, Val};
 use regex::Regex;
 use std::io;
 use std::io::prelude::*;
 
-pub enum Error {
-    CtrlD,
-    EmptyInput,
-}
-
 // Read a user input from stdin, return its AST.
-pub fn read() -> Result<Val, Error> {
+pub fn read() -> Result<Val, ReadError> {
     match read_user_input() {
         Ok(input) => {
             let tokens = tokenize(&input);
@@ -19,15 +14,15 @@ pub fn read() -> Result<Val, Error> {
     }
 }
 
-fn read_user_input() -> Result<String, Error> {
+fn read_user_input() -> Result<String, ReadError> {
     print!("user> ");
     io::stdout().flush().unwrap();
 
     let mut input = String::new();
     match io::stdin().read_line(&mut input) {
         Ok(nread) => match nread {
-            0 => Err(Error::CtrlD),
-            1 => Err(Error::EmptyInput), // only newline
+            0 => Err(ReadError::CtrlD),
+            1 => Err(ReadError::EmptyInput), // only newline
             _ => Ok(input),
         },
         Err(err) => panic!("{}", err),
