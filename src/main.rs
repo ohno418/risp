@@ -12,7 +12,7 @@ mod risp {
                 Ok(val) => print(eval(&val)),
                 Err(reader::Error::CtrlD) => {
                     // Exit with Ctrl-D.
-                    print!("\nexit");
+                    println!("\nexit");
                     process::exit(0);
                 }
                 Err(reader::Error::EmptyInput) => continue,
