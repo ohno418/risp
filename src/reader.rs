@@ -16,7 +16,7 @@ pub fn read() -> Result<Val, ReadError> {
 
 fn read_user_input() -> Result<String, ReadError> {
     print!("user> ");
-    io::stdout().flush().unwrap();
+    io::stdout().flush().expect("failed to flush");
 
     let mut input = String::new();
     match io::stdin().read_line(&mut input) {
@@ -32,17 +32,19 @@ fn read_user_input() -> Result<String, ReadError> {
 fn tokenize(input: &str) -> Vec<String> {
     let re =
         Regex::new(r###"[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)"###)
-            .unwrap();
+            .expect("invalid regex");
 
     let mut tokens = vec![];
     for caps in re.captures_iter(input) {
-        tokens.push(String::from(caps.get(1).unwrap().as_str()));
+        tokens.push(String::from(
+            caps.get(1).expect("failed to get a regex capture").as_str(),
+        ));
     }
     return tokens;
 }
 
 fn parse(tokens: &Vec<String>) -> Val {
-    let int_re = Regex::new(r"[0-9]+").unwrap();
+    let int_re = Regex::new(r"[0-9]+").expect("invalid regex");
 
     match tokens.first() {
         Some(tok) => {
@@ -51,7 +53,7 @@ fn parse(tokens: &Vec<String>) -> Val {
             }
 
             if int_re.is_match(&tok) {
-                return Val::Int(tokens[0].parse().unwrap());
+                return Val::Int(tokens[0].parse().expect("failed to parse a token"));
             } else {
                 return Val::Sym(tok.to_string());
             }
