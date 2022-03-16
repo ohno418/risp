@@ -43,21 +43,11 @@ fn tokenize(input: &str) -> Vec<&str> {
 fn parse(tokens: &[&str]) -> Option<Val> {
     let &first = tokens.first()?;
 
-    // list
     if first == "(" {
-        return parse_list(&tokens);
+        parse_list(&tokens)
+    } else {
+        parse_atom(first)
     }
-
-    // number
-    let int_re = Regex::new(r"[0-9]+").expect("invalid regex");
-    if int_re.is_match(&first) {
-        return Some(Val::Int(
-            tokens[0].parse().expect("failed to parse a token"),
-        ));
-    }
-
-    // symbol
-    return Some(Val::Sym(first.to_string()));
 }
 
 fn parse_list(tokens: &[&str]) -> Option<Val> {
@@ -82,6 +72,19 @@ fn parse_list(tokens: &[&str]) -> Option<Val> {
     }
 
     Some(Val::List(inner))
+}
+
+fn parse_atom(token: &str) -> Option<Val> {
+    // number
+    let int_re = Regex::new(r"[0-9]+").expect("invalid regex");
+    if int_re.is_match(token) {
+        return Some(Val::Int(
+            token.parse().expect("failed to parse a token"),
+        ));
+    }
+
+    // symbol
+    return Some(Val::Sym(token.to_string()));
 }
 
 #[cfg(test)]
