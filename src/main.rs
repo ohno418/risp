@@ -16,6 +16,10 @@ mod risp {
                     process::exit(0);
                 }
                 Err(ReadError::EmptyInput) => continue,
+                Err(ReadError::CannotParse(input)) => {
+                    println!("Cannot parse: {}", input);
+                    continue;
+                }
             }
         }
     }
@@ -24,9 +28,8 @@ mod risp {
         val
     }
 
-    fn print(_result: &Val) {
-        // TODO
-        // print!("{}", result);
+    fn print(result: &Val) {
+        println!("{:?}", result);
     }
 }
 

@@ -3,14 +3,13 @@ use regex::Regex;
 use std::io;
 use std::io::prelude::*;
 
-// Read a user input from stdin, return its AST.
+// Read user input from stdin, return its AST.
 pub fn read() -> Result<Val, ReadError> {
-    match read_user_input() {
-        Ok(input) => {
-            let tokens = tokenize(&input);
-            return Ok(parse(&tokens));
-        }
-        Err(err) => Err(err),
+    let input = read_user_input()?.trim().to_string();
+    let tokens = tokenize(&input);
+    match parse(&tokens) {
+        Some(ast) => Ok(ast),
+        None => Err(ReadError::CannotParse(input)),
     }
 }
 
@@ -29,37 +28,60 @@ fn read_user_input() -> Result<String, ReadError> {
     }
 }
 
-fn tokenize(input: &str) -> Vec<String> {
+fn tokenize(input: &str) -> Vec<&str> {
     let re =
         Regex::new(r###"[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)"###)
             .expect("invalid regex");
 
     let mut tokens = vec![];
     for caps in re.captures_iter(input) {
-        tokens.push(String::from(
-            caps.get(1).expect("failed to get a regex capture").as_str(),
-        ));
+        tokens.push(caps.get(1).expect("failed to get a regex capture").as_str());
     }
     return tokens;
 }
 
-fn parse(tokens: &Vec<String>) -> Val {
-    let int_re = Regex::new(r"[0-9]+").expect("invalid regex");
+fn parse(tokens: &[&str]) -> Option<Val> {
+    let &first = tokens.first()?;
 
-    match tokens.first() {
-        Some(tok) => {
-            if tok == "(" {
-                // TODO
-            }
-
-            if int_re.is_match(&tok) {
-                return Val::Int(tokens[0].parse().expect("failed to parse a token"));
-            } else {
-                return Val::Sym(tok.to_string());
-            }
-        }
-        None => panic!("No token to parse."),
+    // list
+    if first == "(" {
+        return parse_list(&tokens);
     }
+
+    // number
+    let int_re = Regex::new(r"[0-9]+").expect("invalid regex");
+    if int_re.is_match(&first) {
+        return Some(Val::Int(
+            tokens[0].parse().expect("failed to parse a token"),
+        ));
+    }
+
+    // symbol
+    return Some(Val::Sym(first.to_string()));
+}
+
+fn parse_list(tokens: &[&str]) -> Option<Val> {
+    if *tokens.get(0)? != "(" {
+        return None;
+    }
+
+    let mut inner: Vec<Val> = vec![];
+    let mut rest: &[&str] = &tokens[1..];
+    loop {
+        if *rest.get(0)? == ")" {
+            break;
+        }
+
+        let val = parse(rest)?;
+        let tokens_to_consume = match &val {
+            Val::List(list) => list.len() + 2,
+            _ => 1,
+        };
+        inner.push(val);
+        rest = &rest[tokens_to_consume..];
+    }
+
+    Some(Val::List(inner))
 }
 
 #[cfg(test)]
@@ -116,9 +138,9 @@ mod tests {
 
         #[test]
         fn parse_number() -> Result<(), String> {
-            let tokens = vec![String::from("42")];
+            let tokens = vec!["42"];
             let expected = 42;
-            if let Val::Int(n) = parse(&tokens) {
+            if let Some(Val::Int(n)) = parse(&tokens) {
                 if n == expected {
                     return Ok(());
                 } else {
@@ -131,9 +153,9 @@ mod tests {
 
         #[test]
         fn parse_symbol() -> Result<(), String> {
-            let tokens = vec![String::from("abc")];
+            let tokens = vec!["abc"];
             let expected = "abc";
-            if let Val::Sym(s) = parse(&tokens) {
+            if let Some(Val::Sym(s)) = parse(&tokens) {
                 if s == expected {
                     return Ok(());
                 } else {
@@ -146,16 +168,29 @@ mod tests {
 
         #[test]
         fn parse_list() -> Result<(), String> {
-            let tokens = vec![String::from("(* 12 23)")];
-            if let Val::List(first, rest) = parse(&tokens) {
-                if let (Val::Sym(s), Val::List(num0, num1)) = (first.deref(), rest.deref()) {
-                    // TODO
-                    if let (Val::Int(12), Val::Int(23)) = (num0, num1) {
+            let tokens = vec!["(", "*", "12", "23", ")"];
+            if let Some(Val::List(inner)) = parse(&tokens) {
+                if let [Val::Sym(s), Val::Int(12), Val::Int(23)] = inner.as_slice() {
+                    if s == "*" {
                         return Ok(());
                     }
                 }
             }
+            Err("parse wrong".to_string())
+        }
 
+        #[test]
+        fn parse_nested_list() -> Result<(), String> {
+            let tokens = vec!["(", "*", "12", "(", "+", "23", "34", ")", ")"];
+            if let Some(Val::List(inner0)) = parse(&tokens) {
+                if let [Val::Sym(s0), Val::Int(12), Val::List(inner1)] = inner0.as_slice() {
+                    if let [Val::Sym(s1), Val::Int(23), Val::Int(34)] = inner1.as_slice() {
+                        if s0 == "*" && s1 == "+" {
+                            return Ok(());
+                        }
+                    }
+                }
+            }
             Err("parse wrong".to_string())
         }
     }

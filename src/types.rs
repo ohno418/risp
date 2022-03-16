@@ -1,11 +1,12 @@
+#[derive(Debug)]
 pub enum Val {
     Int(i64),
     Sym(String),
-    // first and rest
-    List(Box<Val>, Box<Val>),
+    List(Vec<Val>),
 }
 
 pub enum ReadError {
     CtrlD,
     EmptyInput,
+    CannotParse(String),
 }
