@@ -71,7 +71,6 @@ mod tests {
                 return Err(format!("expected {}, but got {}", expected, n));
             }
         }
-
         Err("expected Node::Int".to_string())
     }
 
@@ -86,7 +85,6 @@ mod tests {
                 return Err(format!("expected {}, but got {}", expected, s));
             }
         }
-
         Err("expected Node::Sym".to_string())
     }
 
