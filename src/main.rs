@@ -20,22 +20,23 @@ mod risp {
             };
 
             let tokens = tokenize(&input);
-            match parse(&tokens) {
-                Some(node) => print(eval(&node)),
+            let node = match parse(&tokens) {
+                Some(node) => node,
                 None => {
                     println!("Cannot parse: {}", &input);
                     continue;
                 }
-            }
+            };
+            eval(&node);
+
+            // debug
+            println!("{:?}", node);
         }
     }
 
     fn eval(node: &Node) -> &Node {
+        // TODO
         node
-    }
-
-    fn print(result: &Node) {
-        println!("{:?}", result);
     }
 }
 
