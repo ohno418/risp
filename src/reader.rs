@@ -1,10 +1,10 @@
-use crate::types::{ReadError, Val};
+use crate::types::{Node, ReadError};
 use regex::Regex;
 use std::io;
 use std::io::prelude::*;
 
 // Read user input from stdin, return its AST.
-pub fn read() -> Result<Val, ReadError> {
+pub fn read() -> Result<Node, ReadError> {
     let input = read_user_input()?.trim().to_string();
     let tokens = tokenize(&input);
     match parse(&tokens) {
@@ -41,7 +41,7 @@ fn tokenize(input: &str) -> Vec<&str> {
 }
 
 // <expr> ::= <list> | <atom>
-fn parse(tokens: &[&str]) -> Option<Val> {
+fn parse(tokens: &[&str]) -> Option<Node> {
     let &first = tokens.first()?;
 
     if first == "(" {
@@ -52,42 +52,42 @@ fn parse(tokens: &[&str]) -> Option<Val> {
 }
 
 // <list> ::= "(" <expr>* ")"
-fn parse_list(tokens: &[&str]) -> Option<Val> {
+fn parse_list(tokens: &[&str]) -> Option<Node> {
     if *tokens.get(0)? != "(" {
         return None;
     }
 
-    let mut inner: Vec<Val> = vec![];
+    let mut inner: Vec<Node> = vec![];
     let mut rest: &[&str] = &tokens[1..];
     loop {
         if *rest.get(0)? == ")" {
             break;
         }
 
-        let val = parse(rest)?;
-        let tokens_to_consume = match &val {
-            Val::List(list) => list.len() + 2,
+        let node = parse(rest)?;
+        let tokens_to_consume = match &node {
+            Node::List(list) => list.len() + 2,
             _ => 1,
         };
-        inner.push(val);
+        inner.push(node);
         rest = &rest[tokens_to_consume..];
     }
 
-    Some(Val::List(inner))
+    Some(Node::List(inner))
 }
 
 // <atom> ::= <number> | <symbol>
-fn parse_atom(token: &str) -> Option<Val> {
+fn parse_atom(token: &str) -> Option<Node> {
     // number
     let int_re = Regex::new(r"[0-9]+").expect("invalid regex");
     if int_re.is_match(token) {
-        return Some(Val::Int(
+        return Some(Node::Int(
             token.parse().expect("failed to parse a token"),
         ));
     }
 
     // symbol
-    return Some(Val::Sym(token.to_string()));
+    return Some(Node::Sym(token.to_string()));
 }
 
 #[cfg(test)]
@@ -146,7 +146,7 @@ mod tests {
         fn parse_number() -> Result<(), String> {
             let tokens = vec!["42"];
             let expected = 42;
-            if let Some(Val::Int(n)) = parse(&tokens) {
+            if let Some(Node::Int(n)) = parse(&tokens) {
                 if n == expected {
                     return Ok(());
                 } else {
@@ -154,14 +154,14 @@ mod tests {
                 }
             }
 
-            Err("expected Val::Int".to_string())
+            Err("expected Node::Int".to_string())
         }
 
         #[test]
         fn parse_symbol() -> Result<(), String> {
             let tokens = vec!["abc"];
             let expected = "abc";
-            if let Some(Val::Sym(s)) = parse(&tokens) {
+            if let Some(Node::Sym(s)) = parse(&tokens) {
                 if s == expected {
                     return Ok(());
                 } else {
@@ -169,14 +169,14 @@ mod tests {
                 }
             }
 
-            Err("expected Val::Sym".to_string())
+            Err("expected Node::Sym".to_string())
         }
 
         #[test]
         fn parse_list() -> Result<(), String> {
             let tokens = vec!["(", "*", "12", "23", ")"];
-            if let Some(Val::List(inner)) = parse(&tokens) {
-                if let [Val::Sym(s), Val::Int(12), Val::Int(23)] = inner.as_slice() {
+            if let Some(Node::List(inner)) = parse(&tokens) {
+                if let [Node::Sym(s), Node::Int(12), Node::Int(23)] = inner.as_slice() {
                     if s == "*" {
                         return Ok(());
                     }
@@ -188,9 +188,9 @@ mod tests {
         #[test]
         fn parse_nested_list() -> Result<(), String> {
             let tokens = vec!["(", "*", "12", "(", "+", "23", "34", ")", ")"];
-            if let Some(Val::List(inner0)) = parse(&tokens) {
-                if let [Val::Sym(s0), Val::Int(12), Val::List(inner1)] = inner0.as_slice() {
-                    if let [Val::Sym(s1), Val::Int(23), Val::Int(34)] = inner1.as_slice() {
+            if let Some(Node::List(inner0)) = parse(&tokens) {
+                if let [Node::Sym(s0), Node::Int(12), Node::List(inner1)] = inner0.as_slice() {
+                    if let [Node::Sym(s1), Node::Int(23), Node::Int(34)] = inner1.as_slice() {
                         if s0 == "*" && s1 == "+" {
                             return Ok(());
                         }

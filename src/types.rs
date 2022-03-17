@@ -1,8 +1,9 @@
+// AST node
 #[derive(Debug)]
-pub enum Val {
+pub enum Node {
     Int(i64),
     Sym(String),
-    List(Vec<Val>),
+    List(Vec<Node>),
 }
 
 pub enum ReadError {

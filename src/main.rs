@@ -3,13 +3,13 @@ mod types;
 
 mod risp {
     use crate::reader::read;
-    use crate::types::{ReadError, Val};
+    use crate::types::{ReadError, Node};
     use std::process;
 
     pub fn repl() {
         loop {
             match read() {
-                Ok(val) => print(eval(&val)),
+                Ok(node) => print(eval(&node)),
                 Err(ReadError::CtrlD) => {
                     // Exit with Ctrl-D.
                     println!("\nexit");
@@ -24,11 +24,11 @@ mod risp {
         }
     }
 
-    fn eval(val: &Val) -> &Val {
-        val
+    fn eval(node: &Node) -> &Node {
+        node
     }
 
-    fn print(result: &Val) {
+    fn print(result: &Node) {
         println!("{:?}", result);
     }
 }
