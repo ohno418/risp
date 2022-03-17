@@ -40,6 +40,7 @@ fn tokenize(input: &str) -> Vec<&str> {
     return tokens;
 }
 
+// <expr> ::= <list> | <atom>
 fn parse(tokens: &[&str]) -> Option<Val> {
     let &first = tokens.first()?;
 
@@ -50,6 +51,7 @@ fn parse(tokens: &[&str]) -> Option<Val> {
     }
 }
 
+// <list> ::= "(" <expr>* ")"
 fn parse_list(tokens: &[&str]) -> Option<Val> {
     if *tokens.get(0)? != "(" {
         return None;
@@ -74,6 +76,7 @@ fn parse_list(tokens: &[&str]) -> Option<Val> {
     Some(Val::List(inner))
 }
 
+// <atom> ::= <number> | <symbol>
 fn parse_atom(token: &str) -> Option<Val> {
     // number
     let int_re = Regex::new(r"[0-9]+").expect("invalid regex");
