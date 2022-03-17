@@ -3,7 +3,7 @@ mod types;
 
 mod risp {
     use crate::reader::read;
-    use crate::types::{ReadError, Node};
+    use crate::types::{Node, ReadError};
     use std::process;
 
     pub fn repl() {

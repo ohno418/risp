@@ -81,9 +81,7 @@ fn parse_atom(token: &str) -> Option<Node> {
     // number
     let int_re = Regex::new(r"[0-9]+").expect("invalid regex");
     if int_re.is_match(token) {
-        return Some(Node::Int(
-            token.parse().expect("failed to parse a token"),
-        ));
+        return Some(Node::Int(token.parse().expect("failed to parse a token")));
     }
 
     // symbol
