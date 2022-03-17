@@ -1,7 +1,7 @@
 use regex::Regex;
 
 // AST node
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Node {
     Int(i64),
     Sym(String),
@@ -61,58 +61,34 @@ mod tests {
     use super::{parse, Node::*};
 
     #[test]
-    fn parse_number() -> Result<(), String> {
-        let tokens = vec!["42"];
-        let expected = 42;
-        if let Some(Int(n)) = parse(&tokens) {
-            if n == expected {
-                return Ok(());
-            } else {
-                return Err(format!("expected {}, but got {}", expected, n));
-            }
-        }
-        Err("expected Node::Int".to_string())
+    fn parse_number() {
+        let actual = parse(&vec!["42"]);
+        let expected = Int(42);
+        assert_eq!(actual.unwrap(), expected);
     }
 
     #[test]
-    fn parse_symbol() -> Result<(), String> {
-        let tokens = vec!["abc"];
-        let expected = "abc";
-        if let Some(Sym(s)) = parse(&tokens) {
-            if s == expected {
-                return Ok(());
-            } else {
-                return Err(format!("expected {}, but got {}", expected, s));
-            }
-        }
-        Err("expected Node::Sym".to_string())
+    fn parse_symbol() {
+        let actual = parse(&vec!["abc"]);
+        let expected = Sym("abc".to_string());
+        assert_eq!(actual.unwrap(), expected);
     }
 
     #[test]
-    fn parse_list() -> Result<(), String> {
-        let tokens = vec!["(", "*", "12", "23", ")"];
-        if let Some(List(inner)) = parse(&tokens) {
-            if let [Sym(s), Int(12), Int(23)] = inner.as_slice() {
-                if s == "*" {
-                    return Ok(());
-                }
-            }
-        }
-        Err("parse wrong".to_string())
+    fn parse_list() {
+        let actual = parse(&vec!["(", "*", "12", "23", ")"]);
+        let expected = List(vec![Sym("*".to_string()), Int(12), Int(23)]);
+        assert_eq!(actual.unwrap(), expected);
     }
 
     #[test]
-    fn parse_nested_list() -> Result<(), String> {
-        let tokens = vec!["(", "*", "12", "(", "+", "23", "34", ")", ")"];
-        if let Some(List(inner0)) = parse(&tokens) {
-            if let [Sym(s0), Int(12), List(inner1)] = inner0.as_slice() {
-                if let [Sym(s1), Int(23), Int(34)] = inner1.as_slice() {
-                    if s0 == "*" && s1 == "+" {
-                        return Ok(());
-                    }
-                }
-            }
-        }
-        Err("parse wrong".to_string())
+    fn parse_nested_list() {
+        let actual = parse(&vec!["(", "*", "12", "(", "+", "23", "34", ")", ")"]);
+        let expected = List(vec![
+            Sym("*".to_string()),
+            Int(12),
+            List(vec![Sym("+".to_string()), Int(23), Int(34)]),
+        ]);
+        assert_eq!(actual.unwrap(), expected);
     }
 }
