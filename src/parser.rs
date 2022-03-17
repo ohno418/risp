@@ -10,7 +10,7 @@ pub enum Node {
 
 // <expr> ::= <list> | <atom>
 pub fn parse(tokens: &[&str]) -> Option<Node> {
-    let &first = tokens.first()?;
+    let first = peek_token(tokens)?;
 
     if first == "(" {
         parse_list(&tokens)
@@ -21,14 +21,14 @@ pub fn parse(tokens: &[&str]) -> Option<Node> {
 
 // <list> ::= "(" <expr>* ")"
 fn parse_list(tokens: &[&str]) -> Option<Node> {
-    if *tokens.get(0)? != "(" {
+    if peek_token(tokens)? != "(" {
         return None;
     }
 
     let mut inner: Vec<Node> = vec![];
     let mut rest: &[&str] = &tokens[1..];
     loop {
-        if *rest.get(0)? == ")" {
+        if peek_token(rest)? == ")" {
             break;
         }
 
@@ -54,6 +54,10 @@ fn parse_atom(token: &str) -> Option<Node> {
 
     // symbol
     return Some(Node::Sym(token.to_string()));
+}
+
+fn peek_token<'a>(tokens: &'a [&str]) -> Option<&'a str> {
+    Some(*tokens.get(0)?)
 }
 
 #[cfg(test)]
