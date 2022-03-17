@@ -138,13 +138,13 @@ mod tests {
 
     mod parse {
         use crate::reader::parse;
-        use crate::types::*;
+        use crate::types::Node::*;
 
         #[test]
         fn parse_number() -> Result<(), String> {
             let tokens = vec!["42"];
             let expected = 42;
-            if let Some(Node::Int(n)) = parse(&tokens) {
+            if let Some(Int(n)) = parse(&tokens) {
                 if n == expected {
                     return Ok(());
                 } else {
@@ -159,7 +159,7 @@ mod tests {
         fn parse_symbol() -> Result<(), String> {
             let tokens = vec!["abc"];
             let expected = "abc";
-            if let Some(Node::Sym(s)) = parse(&tokens) {
+            if let Some(Sym(s)) = parse(&tokens) {
                 if s == expected {
                     return Ok(());
                 } else {
@@ -173,8 +173,8 @@ mod tests {
         #[test]
         fn parse_list() -> Result<(), String> {
             let tokens = vec!["(", "*", "12", "23", ")"];
-            if let Some(Node::List(inner)) = parse(&tokens) {
-                if let [Node::Sym(s), Node::Int(12), Node::Int(23)] = inner.as_slice() {
+            if let Some(List(inner)) = parse(&tokens) {
+                if let [Sym(s), Int(12), Int(23)] = inner.as_slice() {
                     if s == "*" {
                         return Ok(());
                     }
@@ -186,9 +186,9 @@ mod tests {
         #[test]
         fn parse_nested_list() -> Result<(), String> {
             let tokens = vec!["(", "*", "12", "(", "+", "23", "34", ")", ")"];
-            if let Some(Node::List(inner0)) = parse(&tokens) {
-                if let [Node::Sym(s0), Node::Int(12), Node::List(inner1)] = inner0.as_slice() {
-                    if let [Node::Sym(s1), Node::Int(23), Node::Int(34)] = inner1.as_slice() {
+            if let Some(List(inner0)) = parse(&tokens) {
+                if let [Sym(s0), Int(12), List(inner1)] = inner0.as_slice() {
+                    if let [Sym(s1), Int(23), Int(34)] = inner1.as_slice() {
                         if s0 == "*" && s1 == "+" {
                             return Ok(());
                         }
