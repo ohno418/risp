@@ -14,7 +14,7 @@ pub fn tokenize(input: &str) -> Vec<&str> {
 
 #[cfg(test)]
 mod tests {
-    use crate::lexer::tokenize;
+    use super::tokenize;
 
     #[test]
     fn tokenize_number() {

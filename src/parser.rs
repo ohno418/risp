@@ -58,7 +58,7 @@ fn parse_atom(token: &str) -> Option<Node> {
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::{parse, Node::*};
+    use super::{parse, Node::*};
 
     #[test]
     fn parse_number() -> Result<(), String> {
