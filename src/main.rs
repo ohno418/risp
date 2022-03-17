@@ -1,23 +1,29 @@
+mod lexer;
+mod parser;
 mod reader;
-mod types;
 
 mod risp {
-    use crate::reader::read;
-    use crate::types::{Node, ReadError};
+    use crate::lexer::tokenize;
+    use crate::parser::{parse, Node};
+    use crate::reader::{read_input, ReadError};
     use std::process;
 
     pub fn repl() {
         loop {
-            match read() {
-                Ok(node) => print(eval(&node)),
+            let input = match read_input() {
+                Ok(input) => input.trim().to_string(),
                 Err(ReadError::CtrlD) => {
-                    // Exit with Ctrl-D.
                     println!("\nexit");
                     process::exit(0);
                 }
                 Err(ReadError::EmptyInput) => continue,
-                Err(ReadError::CannotParse(input)) => {
-                    println!("Cannot parse: {}", input);
+            };
+
+            let tokens = tokenize(&input);
+            match parse(&tokens) {
+                Some(node) => print(eval(&node)),
+                None => {
+                    println!("Cannot parse: {}", &input);
                     continue;
                 }
             }
