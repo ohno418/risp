@@ -27,11 +27,7 @@ fn parse_list(tokens: &[&str]) -> Option<Node> {
 
     let mut inner: Vec<Node> = vec![];
     let mut rest: &[&str] = &tokens[1..];
-    loop {
-        if peek_token(rest)? == ")" {
-            break;
-        }
-
+    while peek_token(rest)? != ")" {
         let node = parse(rest)?;
         let tokens_to_consume = match &node {
             Node::List(list) => list.len() + 2,
@@ -40,7 +36,6 @@ fn parse_list(tokens: &[&str]) -> Option<Node> {
         inner.push(node);
         rest = &rest[tokens_to_consume..];
     }
-
     Some(Node::List(inner))
 }
 
