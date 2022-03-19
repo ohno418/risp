@@ -10,6 +10,14 @@ mod tests {
     use crate::parser::Node::*;
 
     #[test]
+    fn eval_single_number() {
+        let ast = Int(42);
+        let actual = eval(&ast).unwrap();
+        let expected = "42";
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
     fn eval_arithmetic_list() {
         let ast = List(vec![Sym("+".to_string()), Int(12), Int(23)]);
         let actual = eval(&ast).unwrap();
