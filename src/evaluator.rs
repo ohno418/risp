@@ -57,7 +57,7 @@ mod tests {
         let expected = 35;
         assert_eq!(actual, expected);
 
-        // (- 42 32)
+        // (- 43 32)
         let ast = List(vec![Sym("-".to_string()), Int(43), Int(32)]);
         let actual = eval(&ast).unwrap();
         let expected = 11;
