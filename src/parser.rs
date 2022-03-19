@@ -8,6 +8,8 @@ pub enum Node {
     List(Vec<Node>),
 }
 
+use Node::*;
+
 // <expr> ::= <list> | <atom>
 pub fn parse(tokens: &[&str]) -> Option<Node> {
     let first = peek_token(tokens)?;
@@ -30,13 +32,13 @@ fn parse_list(tokens: &[&str]) -> Option<Node> {
     while peek_token(rest)? != ")" {
         let node = parse(rest)?;
         let tokens_to_consume = match &node {
-            Node::List(list) => list.len() + 2,
+            List(list) => list.len() + 2,
             _ => 1,
         };
         inner.push(node);
         rest = &rest[tokens_to_consume..];
     }
-    Some(Node::List(inner))
+    Some(List(inner))
 }
 
 // <atom> ::= <number> | <symbol>
@@ -44,11 +46,11 @@ fn parse_atom(token: &str) -> Option<Node> {
     // number
     let int_re = Regex::new(r"[0-9]+").expect("invalid regex");
     if int_re.is_match(token) {
-        return Some(Node::Int(token.parse().expect("failed to parse a token")));
+        return Some(Int(token.parse().expect("failed to parse a token")));
     }
 
     // symbol
-    return Some(Node::Sym(token.to_string()));
+    return Some(Sym(token.to_string()));
 }
 
 fn peek_token<'a>(tokens: &'a [&str]) -> Option<&'a str> {
