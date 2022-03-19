@@ -29,9 +29,9 @@ fn main() {
             }
         };
         match eval(&ast) {
-            Some(result) => println!("{}", result),
-            None => {
-                println!("Cannot evaluate: {}", input);
+            Ok(result) => println!("{}", result),
+            Err(err) => {
+                println!("{}", err);
                 continue;
             }
         }
