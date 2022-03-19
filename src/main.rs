@@ -21,19 +21,21 @@ fn main() {
         };
 
         let tokens = tokenize(&input);
-        let node = match parse(&tokens) {
-            Some(node) => node,
+        let ast = match parse(&tokens) {
+            Some(ast) => ast,
             None => {
                 println!("Cannot parse: {}", &input);
                 continue;
             }
         };
-        match eval(&node) {
+        match eval(&ast) {
             Some(result) => println!("{}", result),
             None => {
                 println!("Cannot evaluate: {}", input);
                 continue;
             }
         }
+
+        println!("(debug) {:?}", ast);
     }
 }
