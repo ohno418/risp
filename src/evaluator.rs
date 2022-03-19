@@ -1,26 +1,28 @@
 use crate::parser::Node::{self, *};
 
-pub fn eval(ast: &Node) -> Result<String, String> {
+pub fn eval(ast: &Node) -> Result<i64, String> {
     match ast {
-        Int(num) => Ok(num.to_string()),
+        Int(num) => Ok(*num),
         List(list) => {
             if list.len() != 3 {
                 return Err("Unexpected length of list".to_string());
             }
 
-            if let (Sym(sym), Int(r), Int(l)) = (&list[0], &list[1], &list[2]) {
-                let result: i64 = if sym == "+" {
-                    r + l
+            if let Sym(sym) = &list[0] {
+                let rhs = eval(&list[1])?;
+                let lhs = eval(&list[2])?;
+                let result = if sym == "+" {
+                    rhs + lhs
                 } else if sym == "-" {
-                    r - l
+                    rhs - lhs
                 } else if sym == "*" {
-                    r * l
+                    rhs * lhs
                 } else if sym == "/" {
-                    r / l
+                    rhs / lhs
                 } else {
                     return Err(format!("Unknown operator: {}", sym));
                 };
-                return Ok(result.to_string());
+                return Ok(result);
             }
 
             Err("Cannot eval".to_string())
@@ -41,7 +43,7 @@ mod tests {
     fn eval_single_number() {
         let ast = Int(42);
         let actual = eval(&ast).unwrap();
-        let expected = "42";
+        let expected = 42;
         assert_eq!(actual, expected);
     }
 
@@ -49,7 +51,7 @@ mod tests {
     fn eval_arithmetic_list() {
         let ast = List(vec![Sym("+".to_string()), Int(12), Int(23)]);
         let actual = eval(&ast).unwrap();
-        let expected = "35";
+        let expected = 35;
         assert_eq!(actual, expected);
     }
 
@@ -61,7 +63,7 @@ mod tests {
             List(vec![Sym("+".to_string()), Int(12), Int(23)]),
         ]);
         let actual = eval(&ast).unwrap();
-        let expected = "70";
+        let expected = 70;
         assert_eq!(actual, expected);
     }
 }
