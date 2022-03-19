@@ -89,9 +89,9 @@ mod tests {
             Sym("*".to_string()),
             List(vec![Sym("+".to_string()), Int(1), Int(2)]),
             List(vec![
-                 Sym("-".to_string()),
-                 List(vec![Sym("/".to_string()), Int(21), Int(3)]),
-                 Int(3),
+                Sym("-".to_string()),
+                List(vec![Sym("/".to_string()), Int(21), Int(3)]),
+                Int(3),
             ]),
         ]);
         let actual = eval(&ast).unwrap();
