@@ -1,7 +1,13 @@
-use crate::parser::Node;
+use crate::parser::Node::{self, *};
 
 pub fn eval(ast: &Node) -> Option<String> {
-    Some(format!("(debug) {:?}", ast))
+    match ast {
+        Int(num) => Some(num.to_string()),
+        _ => {
+            println!("(debug) {:?}", ast);
+            None
+        }
+    }
 }
 
 #[cfg(test)]

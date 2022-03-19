@@ -35,7 +35,5 @@ fn main() {
                 continue;
             }
         }
-
-        println!("(debug) {:?}", ast);
     }
 }
