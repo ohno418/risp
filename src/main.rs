@@ -1,11 +1,13 @@
 mod lexer;
 mod parser;
 mod reader;
+mod evaluator;
 
 mod risp {
     use crate::lexer::tokenize;
-    use crate::parser::{parse, Node};
+    use crate::parser::parse;
     use crate::reader::{read_input, ReadError};
+    use crate::evaluator::eval;
     use std::process;
 
     pub fn repl() {
@@ -27,16 +29,9 @@ mod risp {
                     continue;
                 }
             };
-            eval(&node);
-
-            // debug
-            println!("{:?}", node);
+            let result = eval(&node);
+            println!("{}", result);
         }
-    }
-
-    fn eval(node: &Node) -> &Node {
-        // TODO
-        node
     }
 }
 
