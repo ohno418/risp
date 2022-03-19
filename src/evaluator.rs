@@ -4,10 +4,7 @@ pub fn eval(ast: &Node) -> Result<i64, String> {
     match ast {
         Int(num) => Ok(*num),
         List(list) => eval_list(&list),
-        _ => {
-            println!("(debug) {:?}", ast);
-            Err(format!("Cannot eval"))
-        }
+        _ => Err(format!("Cannot eval")),
     }
 }
 
