@@ -3,35 +3,37 @@ use crate::parser::Node::{self, *};
 pub fn eval(ast: &Node) -> Result<i64, String> {
     match ast {
         Int(num) => Ok(*num),
-        List(list) => {
-            if list.len() != 3 {
-                return Err("Unexpected length of list".to_string());
-            }
-
-            if let Sym(sym) = &list[0] {
-                let rhs = eval(&list[1])?;
-                let lhs = eval(&list[2])?;
-                let result = if sym == "+" {
-                    rhs + lhs
-                } else if sym == "-" {
-                    rhs - lhs
-                } else if sym == "*" {
-                    rhs * lhs
-                } else if sym == "/" {
-                    rhs / lhs
-                } else {
-                    return Err(format!("Unknown operator: {}", sym));
-                };
-                return Ok(result);
-            }
-
-            Err("Cannot eval".to_string())
-        }
+        List(list) => eval_list(&list),
         _ => {
             println!("(debug) {:?}", ast);
             Err(format!("Cannot eval"))
         }
     }
+}
+
+fn eval_list(list: &Vec<Node>) -> Result<i64, String> {
+    if list.len() != 3 {
+        return Err("Unexpected length of list".to_string());
+    }
+
+    if let Sym(sym) = &list[0] {
+        let rhs = eval(&list[1])?;
+        let lhs = eval(&list[2])?;
+        let result = if sym == "+" {
+            rhs + lhs
+        } else if sym == "-" {
+            rhs - lhs
+        } else if sym == "*" {
+            rhs * lhs
+        } else if sym == "/" {
+            rhs / lhs
+        } else {
+            return Err(format!("Unknown operator: {}", sym));
+        };
+        return Ok(result);
+    }
+
+    Err("Cannot eval".to_string())
 }
 
 #[cfg(test)]
