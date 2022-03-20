@@ -14,7 +14,7 @@ pub fn read_input() -> Result<String, ReadError> {
     match io::stdin().read_line(&mut input) {
         Ok(nread) => match nread {
             0 => Err(ReadError::CtrlD),
-            1 => Err(ReadError::EmptyInput), // only newline
+            1 => Err(ReadError::EmptyInput), // newline only
             _ => Ok(input),
         },
         Err(err) => panic!("{}", err),
