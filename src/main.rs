@@ -14,7 +14,8 @@ fn main() {
         let input = match read_input() {
             Ok(input) => input.trim().to_string(),
             Err(ReadError::CtrlD) => {
-                println!("\nexit");
+                println!("");
+                println!("Bye.");
                 process::exit(0);
             }
             Err(ReadError::EmptyInput) => continue,
